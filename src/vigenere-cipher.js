@@ -20,12 +20,66 @@ import { NotImplementedError } from '../extensions/index.js';
  * 
  */
 export default class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(type = true) {
+    this.type = type;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  buildKey(message, key) {
+    var rep = Math.ceil(message.length / key.length);
+    return key.repeat(rep).slice(0, message.length);
+  }
+
+
+  encrypt(message, key) {
+    if (!message  || !key ) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    var indA = 65;
+    var indZ = 90;
+
+    var newMessage = message.toUpperCase();
+    var newKey = this.buildKey(message, key).toUpperCase();
+    var result = [];
+
+    var latinCount = 0;
+
+    for (var i = 0; i < newMessage.length; i++) {
+       if (newMessage.charCodeAt(i) >= indA && newMessage.charCodeAt(i) <= indZ) {
+          result.push(String.fromCharCode(indA + ((newMessage.charCodeAt(i) - indA + newKey.charCodeAt(latinCount) - indA) % 26)));
+          latinCount++;
+       }
+       else{
+         result.push(newMessage[i]);
+       }
+    }
+    if(this.type) return result.join('');
+    else return result.reverse().join('');
+  }
+  decrypt(message, key) {
+    if (!message  || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    var indA = 65;
+    var indZ = 90;
+
+    var newMessage = message.toUpperCase();
+    var newKey = this.buildKey(message, key).toUpperCase();
+    var result = [];
+
+    var latinCount = 0;
+
+    for (var i = 0; i < newMessage.length; i++) {
+      if (newMessage.charCodeAt(i) >= indA && newMessage.charCodeAt(i) <= indZ) {
+         result.push(String.fromCharCode(indA + ((newMessage.charCodeAt(i) - newKey.charCodeAt(latinCount) + 26) % 26)));
+         latinCount++;
+      }
+      else{
+        result.push(newMessage[i]);
+      }
+    }
+    if(this.type) return result.join('');
+    else return result.reverse().join('');
   }
 }
